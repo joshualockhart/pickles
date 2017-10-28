@@ -6,6 +6,9 @@ app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PICKLES_DATA_MAX_LENGTH'] = 10000
+
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 db = SQLAlchemy(app)
 
 from models import *
@@ -23,9 +26,12 @@ def index():
             db.session.commit()
         else:
             errors.append("Data too long: max length is {} characters".format(MAX_DATA_LENGTH))
-            return render_template('index.html', errors)
+            return render_template('index.html', errors=errors)
 
-    return render_template('index.html')
+    elements = list(Element.query.all())
+    
+
+    return render_template('index.html',errors=errors, elements=elements)
 
 if __name__ == '__main__':
     app.run()
