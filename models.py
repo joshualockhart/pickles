@@ -1,6 +1,5 @@
 from app import db
 import datetime
-from sqlalchemy.dialects.postgresql import JSON
 
 class Element(db.Model):
     __tablename__ = 'elements'
@@ -14,4 +13,4 @@ class Element(db.Model):
         self.timestamp = datetime.datetime.now()
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return '[Element] <id : {}>, <data : {}>, <timestamp : {}'.format(self.id, self.data, str(self.timestamp))
