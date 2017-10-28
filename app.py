@@ -1,6 +1,6 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
