@@ -14,3 +14,6 @@ class Element(db.Model):
 
     def __repr__(self):
         return '[Element] <id : {}>, <data : {}>, <timestamp : {}'.format(self.id, self.data, str(self.timestamp))
+
+    def to_json(self):
+        return {"id":self.id, "data":self.data, "timestamp":self.timestamp.isoformat()}

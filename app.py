@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+import datetime
 import os
 
 app = Flask(__name__)
@@ -15,24 +16,86 @@ from models import *
 
 MAX_DATA_LENGTH = app.config['PICKLES_DATA_MAX_LENGTH']
 
+def add_element(new_data):
+    if len(new_data) <= MAX_DATA_LENGTH:
+        e = Element(data=new_data)
+        db.session.add(e)
+        db.session.commit()
+    else:
+        raise ValueError("Data too long: max length is {} characters".format(MAX_DATA_LENGTH))
+
+def get_element(element_id):
+    e = Element.query.filter_by(id=element_id).first()
+    if e == None:
+        raise ValueError("No element with id {}".format(element_id))
+    return e
+
+def get_elements_between_dates(start_date, end_date):
+    elements = Element.query.filter(Element.timestamp.between(start_date, end_date))
+    return elements
+
+def remove_element(element_id):
+    try:
+        e = get_element(element_id)
+        db.session.delete(e)
+        db.session.commit()
+    except ValueError as ex:
+        raise ex
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     errors = []
     if request.method == "POST":
         new_data = request.form['data']
-        if len(new_data) <= MAX_DATA_LENGTH:
-            e = Element(data=new_data)
-            db.session.add(e)
-            db.session.commit()
-        else:
-            errors.append("Data too long: max length is {} characters".format(MAX_DATA_LENGTH))
-            return render_template('index.html', errors=errors)
+        try:
+            add_element(new_data)
+        except ValueError as ex:
+            errors.append(str(ex))
+
+    else:
+        errors.append("Data too long: max length is {} characters".format(MAX_DATA_LENGTH))
+        return render_template('index.html', errors=errors)
 
     elements = list(Element.query.all())
-    
 
     return render_template('index.html',errors=errors, elements=elements)
 
+@app.route('/add', methods=['POST'])
+def add():
+    if request.is_json:
+        content = request.get_json(silent=True)
+        keys = content.keys()
+        if "data" in keys and len(keys) == 1:
+            add_element(content.get("data"))
+            return 'OK'
+    return 'BAD REQUEST'
+
+@app.route('/remove', methods=['POST'])
+def remove():
+    if request.is_json:
+        content = request.get_json(silent=True)
+        keys = content.keys()
+        if "id" in keys and len(keys) == 1:
+            remove_element(content.get("id"))
+            return 'OK'
+    return 'BAD REQUEST'
+
+@app.route('/get', methods=['POST'])
+def get():
+    print(request)
+    if request.is_json:
+        content = request.get_json(silent=True)
+        keys = content.keys()
+        if "id" in keys and len(keys) == 1:
+            e = get_element(content.get("id"))
+            return jsonify(e.to_json())
+        elif "start_date" in keys and "end_date" in keys and len(keys) == 2:
+            start_date = datetime.datetime.fromtimestamp(content.get("start_date"))
+            end_date = datetime.datetime.fromtimestamp(content.get("end_date"))
+            elements = get_elements_between_dates(start_date, end_date)
+            print(elements)
+    return 'BAD REQUEST'
+
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
 
