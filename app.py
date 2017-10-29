@@ -52,10 +52,7 @@ def index():
             add_element(new_data)
         except ValueError as ex:
             errors.append(str(ex))
-
-    else:
-        errors.append("Data too long: max length is {} characters".format(MAX_DATA_LENGTH))
-        return render_template('index.html', errors=errors)
+            return render_template('index.html', errors=errors)
 
     elements = list(Element.query.all())
 
@@ -94,16 +91,6 @@ def get():
         elif "start_date" in keys and "end_date" in keys and len(keys) == 2:
             start_date = dateutil.parser.parse(content.get("start_date"))
             end_date = dateutil.parser.parse(content.get("end_date"))
-            """
-            # for now we take times in milliseconds from epoch
-            base_datetime = datetime.datetime( 1970, 1, 1 )
-
-            start_delta = datetime.timedelta(milliseconds=content.get("start_date"))
-            end_delta = datetime.timedelta(milliseconds=content.get("end_date"))
-
-            start_date = base_datetime + start_delta
-            end_date = base_datetime + end_delta
-            """
             elements = get_elements_between_dates(start_date, end_date)
             return jsonify([e.to_json() for e in elements])
 
