@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sheets</title>
+    <title>Pickles</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -14,10 +14,11 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-5 col-sm-offset-1">
-          <h1>Sheets</h1>
+          <h1>Pickles</h1>
           <br>
           <form role="form" method="POST" action="/">
             <div class="form-group">
+              <input type="text" name="sheet_id" class="form-control" id="sheet_id-box" placeholder="Enter Sheet ID..." style="max-width: 300px;">
               <input type="text" name="data" class="form-control" id="data-box" placeholder="Enter Data..." style="max-width: 300px;">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
@@ -28,9 +29,9 @@
           {% endfor %}
           <br>
         </div>
-        <div class="col-sm-5 col-sm-offset-1">
+        <div class="col-sm-3">
           {% if elements %}
-            <h2>Elements</h2>
+          <h2>Elements</h2>
             <br>
             <div id="elements">
               <table class="table table-striped" style="max-width: 300px;">
@@ -38,18 +39,62 @@
                   <tr>
                     <th>Time</th>
                     <th>Data</th>
+                    <th>Sheet ID</th>
                   </tr>
                 </thead>
                 {% for element in elements%}
                   <tr>
                     <td>{{ element.timestamp}}</td>
                     <td>{{ element.data }}</td>
+                    <td>{{ element.sheet_id}}</td>
                   </tr>
                 {% endfor %}
               </table>
             </div>
           {% endif %}
         </div>
+        <div class="col-sm-3 col-sm-offset-1">
+            <h2>Sheets</h2>
+            <br>
+            <div id="sheets">
+              <table class="table table-striped" style="max-width: 300px;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Owner ID</th>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                {% for sheet in sheets%}
+                  <tr>
+                    <td>{{ sheet.id}}</td>
+                    <td>{{ sheet.owner_id}}</td>
+                    <td>{{ sheet.name }}</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+        </div>
+    <h2>users</h2>
+            <br>
+            <div id="users">
+              <table class="table table-striped" style="max-width: 300px;">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                  </tr>
+                </thead>
+                {% for user in users%}
+                  <tr>
+                    <td>{{ user.id}}</td>
+                    <td>{{ user.username }}</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+        </div>
+      
       </div>
     </div>
     <br><br>
