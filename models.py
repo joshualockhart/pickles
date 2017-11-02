@@ -15,6 +15,8 @@ class User(db.Model):
     def __repr__(self):
         return "[User] <id : {}>,  <username : {}>, <sheets: {}>".format(self.id, self.username, self.sheets)
 
+    def to_json(self):
+        return {"id":self.id, "username":self.username}
 
 class Sheet(db.Model):
     __tablename__ = 'sheets'
