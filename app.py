@@ -30,6 +30,13 @@ TODO:
     delete element YES
 """
 
+def add_element(sheet_id, data):
+    element = Element(data=data)
+    sheet = get_sheet(sheet_id)
+    sheet.add_element(element)
+    db.session.commit()
+
+
 def get_element(element_id):
     e = Element.query.filter_by(id=element_id).first()
     if e == None:
@@ -62,8 +69,8 @@ def _add_element():
         content = request.get_json(silent=True)
         keys = content.keys()
         if "data" in keys and "sheet_id" in keys and len(keys) == 2:
-            add_element(content.get("sheet_id"), content.get("data"))
-            return 'OK'
+            new_element = add_element(content.get("sheet_id"), content.get("data"))
+            #return jsonify(new_element.to_json())
     return 'BAD REQUEST'
 
 @app.route('/removeelement', methods=['POST'])
@@ -242,6 +249,7 @@ def add_user(username):
         u = User(username=username)
         db.session.add(u)
         db.session.commit()
+        return u
 
 def remove_user(user_id):
     try:
@@ -292,8 +300,8 @@ def _add_user():
         keys = content.keys()
         if "username" in keys and len(keys) == 1:
             try:
-                add_user(content.get("username"))
-                return 'OK'
+                new_user = add_user(content.get("username"))
+                return jsonify(new_user.to_json())
             except ValueError as ex:
                 return str(ex)
     return 'BAD REQUEST'
