@@ -35,7 +35,7 @@ def add_element(sheet_id, data):
     sheet = get_sheet(sheet_id)
     sheet.add_element(element)
     db.session.commit()
-
+    return element
 
 def get_element(element_id):
     e = Element.query.filter_by(id=element_id).first()
@@ -70,7 +70,7 @@ def _add_element():
         keys = content.keys()
         if "data" in keys and "sheet_id" in keys and len(keys) == 2:
             new_element = add_element(content.get("sheet_id"), content.get("data"))
-            #return jsonify(new_element.to_json())
+            return jsonify(new_element.to_json())
     return 'BAD REQUEST'
 
 @app.route('/removeelement', methods=['POST'])
@@ -137,6 +137,7 @@ def add_sheet(owner_id, name):
     u = get_user(owner_id)
     u.add_sheet(s)
     db.session.commit()
+    return s
 
 def get_elements_of_sheet(sheet_id):
     s = get_sheet(sheet_id)
@@ -180,8 +181,8 @@ def _add_sheet():
         keys = content.keys()
         if "name" in keys and "owner_id" in keys and len(keys) == 2:
             try:
-                add_sheet(content.get("owner_id"), content.get("name"))
-                return 'OK'
+                new_sheet = add_sheet(content.get("owner_id"), content.get("name"))
+                return jsonify(new_sheet.to_json())
             except ValueError as ex:
                 return str(ex)
     return 'BAD REQUEST'
